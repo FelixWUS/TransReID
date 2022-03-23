@@ -53,9 +53,12 @@ class DukeMTMCreID(BaseImageDataset):
         self.query = query
         self.gallery = gallery
 
-        self.num_train_pids, self.num_train_imgs, self.num_train_cams, self.num_train_vids = self.get_imagedata_info(self.train)
-        self.num_query_pids, self.num_query_imgs, self.num_query_cams, self.num_query_vids = self.get_imagedata_info(self.query)
-        self.num_gallery_pids, self.num_gallery_imgs, self.num_gallery_cams, self.num_gallery_vids = self.get_imagedata_info(self.gallery)
+        self.num_train_pids, self.num_train_imgs, self.num_train_cams, self.num_train_vids = self.get_imagedata_info(
+            self.train)
+        self.num_query_pids, self.num_query_imgs, self.num_query_cams, self.num_query_vids = self.get_imagedata_info(
+            self.query)
+        self.num_gallery_pids, self.num_gallery_imgs, self.num_gallery_cams, self.num_gallery_vids = self.get_imagedata_info(
+            self.gallery)
 
     def _download_data(self):
         if osp.exists(self.dataset_dir):
@@ -77,13 +80,15 @@ class DukeMTMCreID(BaseImageDataset):
     def _check_before_run(self):
         """Check if all files are available before going deeper"""
         if not osp.exists(self.dataset_dir):
-            raise RuntimeError("'{}' is not available".format(self.dataset_dir))
+            raise RuntimeError(
+                "'{}' is not available".format(self.dataset_dir))
         if not osp.exists(self.train_dir):
             raise RuntimeError("'{}' is not available".format(self.train_dir))
         if not osp.exists(self.query_dir):
             raise RuntimeError("'{}' is not available".format(self.query_dir))
         if not osp.exists(self.gallery_dir):
-            raise RuntimeError("'{}' is not available".format(self.gallery_dir))
+            raise RuntimeError(
+                "'{}' is not available".format(self.gallery_dir))
 
     def _process_dir(self, dir_path, relabel=False):
         img_paths = glob.glob(osp.join(dir_path, '*.jpg'))
@@ -93,6 +98,7 @@ class DukeMTMCreID(BaseImageDataset):
         for img_path in img_paths:
             pid, _ = map(int, pattern.search(img_path).groups())
             pid_container.add(pid)
+        # NOTE(wushuai): Map raw id (pid) to int begin at 0 (label).
         pid2label = {pid: label for label, pid in enumerate(pid_container)}
 
         dataset = []
@@ -101,7 +107,8 @@ class DukeMTMCreID(BaseImageDataset):
             pid, camid = map(int, pattern.search(img_path).groups())
             assert 1 <= camid <= 8
             camid -= 1  # index starts from 0
-            if relabel: pid = pid2label[pid]
+            if relabel:
+                pid = pid2label[pid]
             dataset.append((img_path, self.pid_begin + pid, camid, 1))
             cam_container.add(camid)
         print(cam_container, 'cam_container')

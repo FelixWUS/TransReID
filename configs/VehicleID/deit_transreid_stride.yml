@@ -1,6 +1,6 @@
 MODEL:
   PRETRAIN_CHOICE: 'imagenet'
-  PRETRAIN_PATH: '/home/heshuting/.cache/torch/checkpoints/deit_base_distilled_patch16_224-df68dfff.pth'
+  PRETRAIN_PATH: '/pre_ckpt/deit_base_distilled_patch16_224-df68dfff.pth'
   METRIC_LOSS_TYPE: 'triplet'
   IF_LABELSMOOTH: 'off'
   IF_WITH_CENTER: 'no'
@@ -23,7 +23,7 @@ INPUT:
 
 DATASETS:
   NAMES: ('VehicleID')
-  ROOT_DIR: ('../../data')
+  ROOT_DIR: ('/home/shuai/TransReID/data')
 
 DATALOADER:
   SAMPLER: 'softmax_triplet'

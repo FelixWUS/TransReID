@@ -1,6 +1,6 @@
 MODEL:
   PRETRAIN_CHOICE: 'imagenet'
-  PRETRAIN_PATH: '/home/heshuting/.cache/torch/checkpoints/jx_vit_base_p16_224-80ecf9dd.pth'
+  PRETRAIN_PATH: '/home/shuai/mot_bl/TransReID/pre_ckpt/jx_vit_base_p16_224-80ecf9dd.pth'
   METRIC_LOSS_TYPE: 'triplet'
   IF_LABELSMOOTH: 'off'
   IF_WITH_CENTER: 'no'
@@ -21,7 +21,7 @@ INPUT:
 
 DATASETS:
   NAMES: ('VehicleID')
-  ROOT_DIR: ('../../data')
+  ROOT_DIR: ('/home/shuai/mot_bl/TransReID/data')
 
 DATALOADER:
   SAMPLER: 'softmax_triplet'
@@ -32,10 +32,10 @@ SOLVER:
   OPTIMIZER_NAME: 'SGD'
   MAX_EPOCHS: 120
   BASE_LR: 0.04
-  IMS_PER_BATCH: 224
+  IMS_PER_BATCH: 24
   WARMUP_METHOD: 'linear'
   LARGE_FC_LR: False
-  CHECKPOINT_PERIOD: 120
+  CHECKPOINT_PERIOD: 30
   LOG_PERIOD: 50
   EVAL_PERIOD: 120
   WEIGHT_DECAY:  1e-4
@@ -44,7 +44,7 @@ SOLVER:
 
 TEST:
   EVAL: True
-  IMS_PER_BATCH: 256
+  IMS_PER_BATCH: 24
   RE_RANKING: False
   WEIGHT: '../logs/vehicleID_vit_base/transformer_120.pth'
   NECK_FEAT: 'before'

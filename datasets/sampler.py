@@ -4,6 +4,7 @@ import copy
 import random
 import numpy as np
 
+
 class RandomIdentitySampler(Sampler):
     """
     Randomly sample N identities, then for each identity,
@@ -17,10 +18,11 @@ class RandomIdentitySampler(Sampler):
     def __init__(self, data_source, batch_size, num_instances):
         self.data_source = data_source
         self.batch_size = batch_size
-        self.num_instances = num_instances
+        self.num_instances = num_instances  # num instances per id
         self.num_pids_per_batch = self.batch_size // self.num_instances
-        self.index_dic = defaultdict(list) #dict with list value
-        #{783: [0, 5, 116, 876, 1554, 2041],...,}
+        self.index_dic = defaultdict(list)  # dict with list value
+        # {783: [0, 5, 116, 876, 1554, 2041],...,}
+        # NOTE(wushuai): {pid: [idxs]}
         for index, (_, pid, _, _) in enumerate(self.data_source):
             self.index_dic[pid].append(index)
         self.pids = list(self.index_dic.keys())
@@ -35,12 +37,15 @@ class RandomIdentitySampler(Sampler):
             self.length += num - num % self.num_instances
 
     def __iter__(self):
+        # {pid: [idxs]}
         batch_idxs_dict = defaultdict(list)
 
         for pid in self.pids:
+            # NOTE(wushuai): idxs: all instances index for a given pid.
             idxs = copy.deepcopy(self.index_dic[pid])
             if len(idxs) < self.num_instances:
-                idxs = np.random.choice(idxs, size=self.num_instances, replace=True)
+                idxs = np.random.choice(
+                    idxs, size=self.num_instances, replace=True)
             random.shuffle(idxs)
             batch_idxs = []
             for idx in idxs:
@@ -55,7 +60,9 @@ class RandomIdentitySampler(Sampler):
         while len(avai_pids) >= self.num_pids_per_batch:
             selected_pids = random.sample(avai_pids, self.num_pids_per_batch)
             for pid in selected_pids:
+                # batch_idxs_dict as a queue, pop front.
                 batch_idxs = batch_idxs_dict[pid].pop(0)
+                # TODO(wushuai): extend or append?
                 final_idxs.extend(batch_idxs)
                 if len(batch_idxs_dict[pid]) == 0:
                     avai_pids.remove(pid)
@@ -64,4 +71,3 @@ class RandomIdentitySampler(Sampler):
 
     def __len__(self):
         return self.length
-
